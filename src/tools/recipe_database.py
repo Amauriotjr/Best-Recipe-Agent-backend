@@ -3,7 +3,11 @@ from pathlib import Path
 
 
 class RecipeDatabaseTool:
-    
+    """
+    Tool responsible for loading recipes from a local JSON database.
+    This is used as a fallback if the external API is not available.
+    """
+
     def __init__(self, database_path: str = "data/recipes.json"):
         self.database_path = Path(database_path)
 

@@ -1,19 +1,28 @@
 from src.agent import RecipeRecommendationAgent
 
 
-def test_agent_returns_recommendations():
+def test_agent_returns_recommendations_using_local_database():
     agent = RecipeRecommendationAgent(database_path="data/recipes.json")
 
-    result = agent.recommend("eggs, cheese, salt", max_results=3)
+    result = agent.recommend(
+        raw_ingredients="eggs, cheese, salt",
+        max_results=3,
+        use_online_api=False
+    )
 
     assert "summary" in result
     assert "recommendations" in result
+    assert result["data_source"] == "local database"
     assert len(result["recommendations"]) > 0
 
 
 def test_agent_returns_user_ingredients():
     agent = RecipeRecommendationAgent(database_path="data/recipes.json")
 
-    result = agent.recommend("eggs, cheese", max_results=3)
+    result = agent.recommend(
+        raw_ingredients="eggs, cheese",
+        max_results=3,
+        use_online_api=False
+    )
 
     assert result["user_ingredients"] == ["eggs", "cheese"]

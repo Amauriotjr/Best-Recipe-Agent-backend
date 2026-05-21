@@ -16,6 +16,7 @@ class RecipeMatcherTool:
             normalized_recipe_ingredients = [
                 ingredient.strip().lower()
                 for ingredient in recipe_ingredients
+                if ingredient and ingredient.strip()
             ]
 
             recipe_ingredient_set = set(normalized_recipe_ingredients)
@@ -39,12 +40,18 @@ class RecipeMatcherTool:
             if match_score > 0:
                 recommendations.append(
                     {
+                        "id": recipe.get("id"),
                         "name": recipe.get("name", "Unknown Recipe"),
                         "category": recipe.get("category", "unknown"),
+                        "area": recipe.get("area", "unknown"),
                         "difficulty": recipe.get("difficulty", "unknown"),
+                        "source": recipe.get("source", "local database"),
                         "match_score": match_score,
                         "available_ingredients": available_ingredients,
-                        "missing_ingredients": missing_ingredients
+                        "missing_ingredients": missing_ingredients,
+                        "image_url": recipe.get("image_url"),
+                        "source_url": recipe.get("source_url"),
+                        "youtube_url": recipe.get("youtube_url")
                     }
                 )
 
