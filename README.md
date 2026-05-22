@@ -1,70 +1,102 @@
-# AI Recipe Recommendation Agent
+# Best Recipe Agent - Backend
 
-AI Recipe Recommendation Agent is a Python-based agent system that recommends recipes based on ingredients provided by the user.
+Best Recipe Agent Backend is a Python FastAPI application that powers an AI- and agent-based recipe recommendation system.
 
-The system receives a list of ingredients, processes the input, retrieves recipe data from MongoDB, compares ingredients, calculates match scores, and returns structured recipe recommendations through a FastAPI API.
+The backend receives ingredients from the user, retrieves candidate recipes from MongoDB, compares available ingredients with recipe requirements, calculates compatibility scores, and returns ranked recipe recommendations through API endpoints.
 
-This project was developed as an AI- and agent-based Python software system. It demonstrates tool usage, database access, external data conversion, API development, testing, and deployment preparation.
+This project was developed as part of an AI- and agent-based Python software system. It demonstrates agent workflow coordination, external database access, data conversion, testing, API development, and deployment preparation.
+
+---
+
+## Live Deployment
+
+Backend API:
+
+```text
+YOUR_RENDER_BACKEND_URL
+```
+
+Swagger Documentation:
+
+```text
+YOUR_RENDER_BACKEND_URL/docs
+```
+
+Frontend Application:
+
+```text
+YOUR_VERCEL_FRONTEND_URL
+```
+
+Frontend Repository:
+
+```text
+https://github.com/Amauriotjr/Best-Recipe-Agent-frontend
+```
+
+---
 
 ## Project Goal
 
-The goal of this project is to help users discover recipes they can prepare using ingredients they already have.
+The goal of this backend is to provide recipe recommendations based on ingredients that the user already has.
 
-The user provides ingredients such as:
+Example user input:
 
 ```text
 flour, sugar, eggs, butter
 ```
 
-The system then recommends recipes and shows:
+The backend returns:
 
-- the best matching recipes;
-- the match score for each recipe;
-- available ingredients;
+- recommended recipes;
+- match score for each recipe;
+- ingredients the user has;
 - missing ingredients;
-- the database source used;
-- links to original recipe sources when available.
+- original recipe ingredients;
+- recipe instructions;
+- source URL when available.
+
+---
 
 ## Main Features
 
-- Receives ingredients from the user
-- Cleans and normalizes ingredient input
-- Uses an agent-based workflow
-- Uses MongoDB as the main recipe database
-- Imports recipe data from an external GitHub dataset
-- Converts external JSON recipe data into the internal project format
-- Removes quantities, fractions, and measurement units from ingredient names
-- Stores normalized ingredients in MongoDB for search
-- Compares user ingredients with recipe ingredients
-- Calculates recipe match scores
-- Avoids false ingredient matches such as `flour` matching `rice flour`
-- Avoids false ingredient matches such as `peanut butter` matching `butter`
-- Shows available and missing ingredients
-- Provides API routes using FastAPI
-- Provides Swagger UI for testing
-- Includes automated tests with pytest
+- FastAPI backend API
+- Swagger UI documentation
+- MongoDB database integration
+- Agent-based recommendation workflow
+- Ingredient parsing and normalization
+- Recipe matching and ranking
+- Strict ingredient matching to avoid false positives
+- External recipe dataset conversion
+- MongoDB import script
+- Automated tests with pytest
+- Deployment-ready backend for Render
+
+---
 
 ## Technologies Used
 
 - Python
 - FastAPI
-- Swagger UI
 - Uvicorn
-- MongoDB
+- MongoDB Atlas
 - PyMongo
 - Python Dotenv
 - JSON
 - Pytest
 - Git
 - GitHub
+- Render
 
-## Agent-Based Approach
+---
 
-The system uses an agent-based workflow.
+## Agent-Based Workflow
 
-The main agent is responsible for coordinating the tools and controlling the recommendation process. The user does not interact directly with each internal tool. Instead, the user sends ingredients to the API, and the agent decides how to process the request.
+The backend uses an agent-based workflow.
 
-The workflow is:
+The main agent coordinates different tools. Each tool has a specific responsibility, and the user only interacts with the API.
+
+Workflow:
 
 ```text
 User input
@@ -73,42 +105,48 @@ User input
 → MongoDB Recipe Database Tool
 → Recipe Matcher Tool
 → Report Generator Tool
-→ Final recommendation response
+→ API Response
 ```
 
-The agent performs the following responsibilities:
+The agent performs the following steps:
 
-1. Receives raw ingredient input from the user.
-2. Calls the Ingredient Parser Tool to clean the input.
-3. Calls the MongoDB Recipe Database Tool to retrieve candidate recipes.
-4. Calls the Recipe Matcher Tool to calculate recipe compatibility.
-5. Calls the Report Generator Tool to create the final structured response.
+1. Receives raw ingredient input.
+2. Parses and cleans the ingredient list.
+3. Searches MongoDB for candidate recipes.
+4. Compares user ingredients with recipe ingredients.
+5. Calculates match scores.
+6. Sorts recipes by compatibility.
+7. Returns a structured JSON response.
 
-## Tools Used by the System
+---
+
+## Tools Used by the Agent
 
 ### Ingredient Parser Tool
 
-The Ingredient Parser Tool converts raw user input into a clean list of ingredients.
+The Ingredient Parser Tool converts raw user input into a clean list.
 
-Example input:
+Example:
 
 ```text
 Eggs, Flour, Sugar
 ```
 
-Example output:
+Becomes:
 
 ```python
 ["eggs", "flour", "sugar"]
 ```
 
-This tool removes extra spaces, converts text to lowercase, and removes duplicate ingredients.
+It removes extra spaces, converts text to lowercase, and removes duplicates.
+
+---
 
 ### Ingredient Normalizer Tool
 
-The Ingredient Normalizer Tool normalizes ingredient names so they can be compared consistently.
+The Ingredient Normalizer Tool standardizes ingredient names for comparison.
 
-For example:
+Examples:
 
 ```text
 eggs → egg
@@ -116,7 +154,7 @@ tomatoes → tomato
 all-purpose flour → all purpose flour
 ```
 
-This improves matching while avoiding incorrect partial matches.
+The normalizer helps compare ingredients consistently while avoiding incorrect partial matches.
 
 For example:
 
@@ -126,25 +164,29 @@ flour does not match flour tortilla
 peanut butter does not match butter
 ```
 
+---
+
 ### MongoDB Recipe Database Tool
 
-The MongoDB Recipe Database Tool connects to MongoDB and retrieves recipe candidates.
+The MongoDB Recipe Database Tool connects to MongoDB and retrieves candidate recipes.
 
-MongoDB is used as the main database because the full converted recipe dataset is too large to store directly in GitHub.
+MongoDB is used because the full converted recipe dataset is too large to store directly in GitHub.
 
-The tool searches recipes using normalized ingredients stored in the database.
+The database stores recipes with normalized ingredients, making recipe search faster and more consistent.
+
+---
 
 ### Recipe Matcher Tool
 
 The Recipe Matcher Tool compares the user's ingredients with the ingredients required by each recipe.
 
-The match score is calculated using the following idea:
+The match score is calculated as:
 
 ```text
 match score = available ingredients / required ingredients
 ```
 
-For example:
+Example:
 
 ```text
 User ingredients:
@@ -157,11 +199,21 @@ Match score:
 3 / 4 = 75%
 ```
 
-The matcher uses strict ingredient comparison to avoid false positives.
+The matcher returns:
+
+- available ingredients;
+- missing ingredients;
+- compatibility score;
+- recipe metadata;
+- original ingredients;
+- instructions;
+- source URL.
+
+---
 
 ### Report Generator Tool
 
-The Report Generator Tool creates the final structured response.
+The Report Generator Tool creates the final structured response returned by the API.
 
 The response includes:
 
@@ -169,12 +221,11 @@ The response includes:
 - data source;
 - total recommendations;
 - summary;
-- recommended recipes;
-- available ingredients;
-- missing ingredients;
-- source links when available.
+- recommended recipes.
 
-## External Data Source
+---
+
+## External Dataset
 
 This project uses recipe data adapted from the public GitHub repository:
 
@@ -182,44 +233,42 @@ This project uses recipe data adapted from the public GitHub repository:
 https://github.com/dpapathanasiou/recipes
 ```
 
-The dataset is used as the main recipe source.
+The external repository is not committed directly into this backend repository.
 
-The external repository itself is not committed directly into this project repository. It is downloaded locally into:
+It should be cloned locally into:
 
 ```text
 data/external/recipes-github/
 ```
 
-This folder is ignored by Git using `.gitignore`.
+This folder is ignored by Git.
 
-The external dataset is first converted into the internal project format and then imported into MongoDB.
+---
 
 ## Data Conversion Process
 
-The external GitHub dataset uses a different JSON structure from this project.
+The original external dataset has a different JSON structure from this project.
 
-The import script is responsible for converting the external dataset into the internal format used by the agent.
-
-The script is located at:
+The conversion script is located at:
 
 ```text
 scripts/import_github_recipes.py
 ```
 
-During conversion, the system:
+The script:
 
-- reads all recipe JSON files from the external dataset;
+- reads recipe JSON files from the external dataset;
 - extracts recipe names;
-- extracts ingredient lists;
+- extracts ingredients;
 - extracts instructions;
 - extracts source URLs;
-- removes duplicate recipes;
 - removes invalid recipes;
-- converts the data into the internal project format;
-- saves the result locally in `data/recipes.json`;
-- creates an import summary in `data/recipes_import_summary.json`.
+- removes duplicate recipes;
+- cleans ingredient names;
+- generates `data/recipes.json`;
+- generates `data/recipes_import_summary.json`.
 
-The ingredient cleaning process removes:
+Ingredient cleaning removes:
 
 - quantities;
 - fractions;
@@ -228,41 +277,40 @@ The ingredient cleaning process removes:
 - preparation details;
 - unnecessary punctuation.
 
-Example conversions:
+Examples:
 
 ```text
 "1/2 cup flour" → "flour"
 "½ teaspoon salt" → "salt"
 "3 tablespoons olive oil" → "olive oil"
 "3/4 cup very warm water" → "water"
-"2 teaspoons sugar" → "sugar"
 ```
 
-This conversion improves consistency and helps the matcher compare user ingredients with recipe ingredients more accurately.
+---
 
 ## MongoDB Import Process
 
-After the external dataset is converted into `data/recipes.json`, the recipes are imported into MongoDB using:
+After converting the external dataset, the recipes are imported into MongoDB using:
 
 ```text
 scripts/import_recipes_to_mongodb.py
 ```
 
-During the MongoDB import process, the system:
+The MongoDB import script:
 
-- reads the converted `data/recipes.json` file;
-- adds a `normalized_ingredients` field to each recipe;
+- reads `data/recipes.json`;
+- adds normalized ingredients to each recipe;
 - inserts recipes into MongoDB in batches;
 - creates indexes for better search performance.
 
-The full generated `data/recipes.json` file is not committed to GitHub because it is larger than GitHub's file size limit.
+The full `data/recipes.json` file is not committed to GitHub because it can exceed GitHub's file size limit.
 
-Instead, the project includes scripts that allow the database to be recreated locally.
+---
 
 ## Project Structure
 
 ```text
-ai-recipe-recommendation-agent/
+Best-Recipe-Agent-backend/
 │
 ├── src/
 │   ├── __init__.py
@@ -301,28 +349,7 @@ ai-recipe-recommendation-agent/
 └── .gitignore
 ```
 
-## Important GitHub Note
-
-The full file below is generated locally and should not be committed to GitHub:
-
-```text
-data/recipes.json
-```
-
-This file can be larger than 100 MB, which exceeds GitHub's file size limit.
-
-The following files and folders are ignored by Git:
-
-```text
-data/recipes.json
-data/external/recipes-github/
-.env
-venv/
-__pycache__/
-.pytest_cache/
-```
-
-The project stores the large recipe dataset in MongoDB instead of GitHub.
+---
 
 ## Environment Variables
 
@@ -336,29 +363,23 @@ MONGODB_DATABASE=recipe_agent
 MONGODB_COLLECTION=recipes
 ```
 
-The `.env` file must not be committed to GitHub because it contains sensitive connection information.
+The `.env` file must not be committed to GitHub.
 
-A safe example file should be included as:
+A safe example file is included as:
 
 ```text
 .env.example
 ```
 
-Example `.env.example`:
-
-```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
-MONGODB_DATABASE=recipe_agent
-MONGODB_COLLECTION=recipes
-```
+---
 
 ## Installation
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/ai-recipe-recommendation-agent.git
-cd ai-recipe-recommendation-agent
+git clone https://github.com/Amauriotjr/Best-Recipe-Agent-backend.git
+cd Best-Recipe-Agent-backend
 ```
 
 Create a virtual environment:
@@ -387,7 +408,9 @@ Install dependencies:
 python -m pip install -r requirements.txt
 ```
 
-## Preparing the External Dataset
+---
+
+## Preparing the Dataset Locally
 
 Create the external data folder:
 
@@ -407,50 +430,48 @@ Clone the external recipe dataset:
 git clone --depth 1 https://github.com/dpapathanasiou/recipes.git data/external/recipes-github
 ```
 
-Run the conversion script:
+Convert the external dataset:
 
 ```bash
 python scripts/import_github_recipes.py
 ```
 
-This command generates or updates:
+This generates:
 
 ```text
 data/recipes.json
 data/recipes_import_summary.json
 ```
 
-To test the import process with a smaller number of recipes:
+To test with fewer recipes:
 
 ```bash
 python scripts/import_github_recipes.py --limit 100
 ```
 
-For the final version, import all available recipes:
-
-```bash
-python scripts/import_github_recipes.py
-```
+---
 
 ## Importing Recipes into MongoDB
 
-After creating `data/recipes.json`, import the converted recipes into MongoDB:
+After generating `data/recipes.json`, import the recipes into MongoDB:
 
 ```bash
 python scripts/import_recipes_to_mongodb.py --clear
 ```
 
-The `--clear` option removes existing recipes from the collection before importing the new data.
+The `--clear` flag removes existing recipes from the collection before inserting the new data.
 
-If the import works correctly, the terminal will show a message similar to:
+Expected result:
 
 ```text
-Imported 50000 recipes into MongoDB.
+Imported recipes into MongoDB.
 Database: recipe_agent
 Collection: recipes
 ```
 
-## Running the Application
+---
+
+## Running the Backend Locally
 
 Start the API server:
 
@@ -458,25 +479,27 @@ Start the API server:
 uvicorn src.main:app --reload
 ```
 
-Open Swagger UI in the browser:
+Open Swagger UI:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-The Swagger page allows the user to test all API routes directly in the browser.
+---
 
 ## API Endpoints
 
 ### GET `/`
 
-Returns a welcome message and basic API information.
+Returns a welcome message.
 
 Example:
 
 ```text
 http://127.0.0.1:8000/
 ```
+
+---
 
 ### GET `/health`
 
@@ -490,9 +513,11 @@ Example response:
 }
 ```
 
+---
+
 ### GET `/database/status`
 
-Checks the MongoDB connection and returns database information.
+Checks the MongoDB connection.
 
 Example response:
 
@@ -505,9 +530,11 @@ Example response:
 }
 ```
 
+---
+
 ### GET `/recipes/search`
 
-Searches candidate recipes from MongoDB using one or more ingredients.
+Searches candidate recipes from MongoDB.
 
 Example:
 
@@ -515,9 +542,11 @@ Example:
 http://127.0.0.1:8000/recipes/search?ingredients=flour,sugar,eggs&limit=10
 ```
 
+---
+
 ### POST `/recommend`
 
-Recommends recipes based on the ingredients provided by the user.
+Returns recipe recommendations based on ingredients.
 
 Example request:
 
@@ -543,12 +572,7 @@ Example response:
   "summary": "The best recommendation is Example Recipe with a match score of 75.0%.",
   "recommendations": [
     {
-      "id": null,
       "name": "Example Recipe",
-      "category": "external",
-      "area": "unknown",
-      "difficulty": "unknown",
-      "source": "allrecipes.com",
       "match_score": 75.0,
       "available_ingredients": [
         "flour",
@@ -564,50 +588,19 @@ Example response:
         "2 eggs",
         "1/2 cup butter"
       ],
+      "instructions": [
+        "Mix the ingredients.",
+        "Bake until ready."
+      ],
       "source_url": "https://example.com"
     }
   ]
 }
 ```
 
-## Testing with Swagger
+---
 
-After running the application, open:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Then test the `POST /recommend` endpoint.
-
-Recommended test:
-
-```json
-{
-  "ingredients": "flour, sugar, eggs, butter",
-  "max_results": 5
-}
-```
-
-You can also test:
-
-```json
-{
-  "ingredients": "peanut butter, bread",
-  "max_results": 5
-}
-```
-
-And:
-
-```json
-{
-  "ingredients": "tomato, cheese, pasta",
-  "max_results": 5
-}
-```
-
-## Running Automated Tests
+## Running Tests
 
 Run all tests:
 
@@ -615,180 +608,146 @@ Run all tests:
 python -m pytest
 ```
 
-Using `python -m pytest` is recommended because it works more reliably on Windows virtual environments.
-
 The tests verify:
 
 - ingredient parsing;
 - duplicate ingredient removal;
 - invalid input handling;
-- ingredient cleaning during import;
+- ingredient cleaning;
 - recipe matching;
-- strict ingredient matching;
-- plural and singular ingredient matching;
-- agent workflow with a fake database;
+- strict ingredient comparison;
+- plural and singular matching;
+- agent workflow;
 - API endpoints;
-- dataset conversion logic.
+- dataset conversion.
 
-## Input and Output Handling
+---
 
-The system receives user input as a string.
+## Deployment on Render
 
-Example:
+This backend is deployed on Render as a Web Service.
+
+Recommended Render configuration:
 
 ```text
-flour, sugar, eggs, butter
+Runtime:
+Python
 ```
 
-The Ingredient Parser Tool converts this string into a list:
-
-```python
-["flour", "sugar", "eggs", "butter"]
+```text
+Build Command:
+pip install -r requirements.txt
 ```
 
-The agent then sends this list to the MongoDB Recipe Database Tool. MongoDB returns candidate recipes as dictionaries.
-
-Each recipe contains fields such as:
-
-```json
-{
-  "name": "Recipe Name",
-  "ingredients": ["flour", "sugar", "eggs"],
-  "normalized_ingredients": ["flour", "sugar", "egg"],
-  "category": "external",
-  "difficulty": "unknown"
-}
+```text
+Start Command:
+uvicorn src.main:app --host 0.0.0.0 --port $PORT
 ```
 
-The Recipe Matcher Tool compares the user's normalized ingredients with each recipe's normalized ingredients and returns structured recommendation data.
+Required Render environment variables:
 
-The final response is returned as JSON through the FastAPI API.
-
-## Error Handling
-
-The system handles several error cases:
-
-- empty ingredient input;
-- missing MongoDB connection string;
-- unavailable MongoDB database;
-- invalid database configuration;
-- recipes without valid ingredients;
-- no matching recipes found.
-
-If MongoDB is not configured correctly, the system returns an error explaining that `MONGODB_URI` is missing or invalid.
-
-## Deployment Preparation
-
-The current version is prepared as a local API application.
-
-It can be executed locally using:
-
-```bash
-uvicorn src.main:app --reload
+```env
+MONGODB_URI=my_mongodb_connection_string
+MONGODB_DATABASE=recipe_agent
+MONGODB_COLLECTION=recipes
 ```
 
-This deployment approach is suitable for controlled testing because the user can run the API locally, test it through Swagger, and verify the output before using it in a real environment.
+---
 
-The MongoDB connection is configured through environment variables, which makes the application easier to deploy safely.
+## CORS Configuration
 
-## Proposed Deployment Strategy
+The backend allows requests from:
 
-The recommended deployment strategy is a staged release.
-
-First, the system should be tested locally using Swagger and a MongoDB test database. After local testing, the full recipe dataset should be imported into MongoDB. Then, the system can be deployed to a controlled environment such as:
-
-- local server;
-- Docker container;
-- cloud web service;
-- API-based assistant.
-
-This strategy reduces risk because the application logic can be tested separately from the full production database.
-
-## Version Control
-
-Git is used to track the development process.
-
-Recommended commit history:
-
-```bash
-git add .
-git commit -m "Create initial FastAPI recipe recommendation agent"
-
-git add .
-git commit -m "Add external recipe dataset import script"
-
-git add .
-git commit -m "Improve ingredient cleaning and recipe matching"
-
-git add .
-git commit -m "Replace external API with MongoDB recipe database"
-
-git add .
-git commit -m "Add MongoDB import workflow"
-
-git add .
-git commit -m "Update README documentation"
+```text
+http://localhost:5173
+http://127.0.0.1:5173
+https://best-recipe-agent-frontend.vercel.app
 ```
 
-Before pushing to GitHub, confirm that the large dataset is not staged:
+If the Vercel frontend URL changes, it must be added to the CORS configuration in `src/main.py`.
 
-```bash
-git status
+---
+
+## GitHub File Size Note
+
+The full generated file below should not be committed to GitHub:
+
+```text
+data/recipes.json
 ```
 
-Do not push:
+It can exceed GitHub's file size limit.
+
+The following files and folders are ignored:
 
 ```text
 data/recipes.json
 data/external/recipes-github/
 .env
+venv/
+__pycache__/
+.pytest_cache/
 ```
+
+---
+
+## Deployment Strategy
+
+The deployment strategy uses separate services:
+
+```text
+Backend:
+Render
+
+Frontend:
+Vercel
+
+Database:
+MongoDB Atlas
+```
+
+This separation improves maintainability because each part of the system has a clear responsibility.
+
+---
 
 ## Project Status
 
-Current version: `0.4.0`
+Current version: `1.0.0`
 
-The system currently supports:
+The backend currently supports:
 
-- recipe recommendation through MongoDB;
-- external dataset import;
-- data conversion;
-- ingredient cleaning;
-- normalized database search;
-- strict ingredient matching;
+- MongoDB recipe search;
 - FastAPI routes;
-- Swagger testing;
-- automated tests.
+- Swagger documentation;
+- recipe recommendation;
+- strict ingredient matching;
+- recipe instructions in responses;
+- external dataset conversion;
+- MongoDB import workflow;
+- automated tests;
+- Render deployment.
 
-## Future Improvements
+## Related Repository
 
-Possible future improvements include:
+Frontend repository:
 
-- filtering recipes by category;
-- filtering recipes by difficulty;
-- filtering recipes by cuisine;
-- nutrition information;
-- better natural language ingredient matching;
-- user accounts;
-- saved favorite recipes;
-- frontend interface;
-- Docker deployment.
+```text
+https://github.com/Amauriotjr/Best-Recipe-Agent-frontend
+```
+
+---
 
 ## External Dataset Credit
 
-This project uses recipe data adapted from the public GitHub repository:
+This project uses recipe data adapted from:
 
 ```text
 https://github.com/dpapathanasiou/recipes
 ```
 
-The external dataset is used as the recipe data source. The data is converted into the internal format required by this project and then imported into MongoDB.
+The data is converted into the internal project format and imported into MongoDB.
 
-The external repository is not included directly in this repository. It should be cloned separately into:
-
-```text
-data/external/recipes-github/
-```
+---
 
 ## License
 
